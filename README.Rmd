@@ -1,0 +1,33 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+# exception
+
+Provides exception objects for use in an exception hierarchy, and a means of
+stopping, warning, and messaging with these objects. By defining an explicit
+hierarchy, catching and handling errors in groups becomes possible. Common
+errors have default messages, with only meaningful parameters needed.
+
+```{r}
+library("exception")
+
+nsfEx <- NoSuchFileException( path= "waldo.txt" )
+class(nsfEx)
+
+tryCatch(
+   stopWith( nsfEx ),
+   IOException= function(e) {print("Caught an IOException.")}
+)
+```
+

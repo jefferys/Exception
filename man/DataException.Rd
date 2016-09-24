@@ -7,17 +7,17 @@
 \alias{FileNotEmptyException}
 \title{The DataException hierarchy}
 \usage{
-DataException(data = NA, message = "A DataException occurred.",
+DataException(data = NA, message = "*", call = NULL,
+  package = packageName(), ...)
+
+FileFormatException(path = NA, line = NA, data = NA, message = "*",
   call = NULL, package = packageName(), ...)
 
-\code{ FileFormatException( path = NA, line = NA, data = NA,
-   message = *, call = NULL, package = packageName(), ...)}
+EmptyFileException(path = NA, data = NA, line = NA, message = "*",
+  call = NULL, package = packageName(), ...)
 
-\code{ EmptyException( path = NA, line = NA, data = NA,
-   message = *, call = NULL, package = packageName(), ...)}
-
-\code{ FileNotEmptyException( path = NA, line = NA, data = NA,
-   message = *, call = NULL, package = packageName(), ...)}
+FileNotEmptyException(path = NA, data = NA, line = NA, message = "*",
+  call = NULL, package = packageName(), ...)
 }
 \arguments{
 \item{data}{The data element associated with an exception. Format varies and
@@ -33,8 +33,8 @@ message displayed will have the name of the package prepended as
 over-ridden for \code{Exception} subclasses.}
 
 \item{call}{The call or call stack associated with the exception. By default
-this is NUL. Can be overridden to provide the \code{\link{Sys.calls}} call
-stack or a single \code{\link{Sys.call}}.}
+this is NUL. Can be overridden to provide the \code{\link{sys.calls}} call
+stack or a single \code{\link{sys.call}}.}
 
 \item{package}{The package where this exception is generated. May be
 \code{NULL} when exceptions are generated and signaled from interactive or
@@ -115,7 +115,6 @@ conditionMessage(dEx)
 conditionCall(dEx)
 exceptionPackage(dEx)
 exceptionData(dEx)
-
 }
 \seealso{
 \code{condition}, \code{conditionMessage()}, \code{conditionCall},

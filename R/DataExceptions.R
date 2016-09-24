@@ -15,8 +15,8 @@
 #'   \code{'[\var{package}] \var{message}'} due to \code{conditionMessage} being
 #'   over-ridden for \code{Exception} subclasses.
 #' @param call The call or call stack associated with the exception. By default
-#'   this is NUL. Can be overridden to provide the \code{\link{Sys.calls}} call
-#'   stack or a single \code{\link{Sys.call}}.
+#'   this is NUL. Can be overridden to provide the \code{\link{sys.calls}} call
+#'   stack or a single \code{\link{sys.call}}.
 #' @param package The package where this exception is generated. May be
 #'   \code{NULL} when exceptions are generated and signaled from interactive or
 #'   script level code and not from a package. Attempts to guess the package by
@@ -60,11 +60,11 @@
 #' conditionCall(dEx)
 #' exceptionPackage(dEx)
 #' exceptionData(dEx)
-#'
 #' @export
-DataException <- function( data=NA, message= 'A DataException occurred.',
-								 call= NULL, package=packageName(), ...
+DataException <- function( data=NA,
+   message= '*', call= NULL, package=packageName(), ...
 ) {
+   if (message == "*") { message= 'A DataException occurred.' }
 	e <- Exception( message= message, call= call, package= package, data=data, ... )
 	extendException( "DataException", e )
 }
@@ -89,15 +89,12 @@ FileFormatMsg <- function (path= NA, line= NA, data= NA, wd= getwd() ) {
 #'    \item data: Defaults: \code{path = NA, line = NA, data = NA}.
 #' }
 #'
-#' @usage \code{ FileFormatException( path = NA, line = NA, data = NA,
-#'    message = *, call = NULL, package = packageName(), ...)}
-#'
 #' @export
 FileFormatException <- function( path=NA, line=NA, data= NA,
-	message= FileFormatMsg(line=line, path=path, data=data),
-	call= NULL, package= packageName(), ...
+	message= "*", call= NULL, package= packageName(), ...
 ) {
-	dEx <- DataException( message=message, call= call, package= package,
+   if (message == "*") { message= FileFormatMsg(line=line, path=path, data=data) }
+   dEx <- DataException( message=message, call= call, package= package,
 			data=data, path=path, line=line, ... )
 	extendException( "FileFormatException", dEx )
 }
@@ -118,15 +115,12 @@ EmptyFileMsg <- function (path= NA, wd= getwd() ) {
 #'    \item data: Defaults: \code{path = NA, data= NA, line= NA}.
 #' }
 #'
-#' @usage \code{ EmptyException( path = NA, line = NA, data = NA,
-#'    message = *, call = NULL, package = packageName(), ...)}
-#'
 #' @export
 EmptyFileException <- function( path=NA, data=NA, line=NA,
-	message= EmptyFileMsg( path=path ),
-	call= NULL, package= packageName(), ...
+	message= "*", call= NULL, package= packageName(), ...
 ) {
-	ffEx <- FileFormatException( message=message, call= call, package= package,
+   if (message == "*") { message= EmptyFileMsg( path=path ) }
+   ffEx <- FileFormatException( message=message, call= call, package= package,
 								 data=data, path=path, line=line, ... )
 	extendException( "EmptyFileException", ffEx )
 }
@@ -149,15 +143,12 @@ FileNotEmptyMsg <- function (path= NA, wd= getwd() ) {
 #'    \item data: Defaults: \code{path = NA, data= NA, line= NA}.
 #' }
 #'
-#' @usage \code{ FileNotEmptyException( path = NA, line = NA, data = NA,
-#'    message = *, call = NULL, package = packageName(), ...)}
-#'
 #' @export
 FileNotEmptyException <- function( path=NA, data=NA, line=NA,
-	message= FileNotEmptyMsg( path=path ),
-	call= NULL, package= packageName(), ...
+	message= "*",	call= NULL, package= packageName(), ...
 ) {
-	ffEx <- FileFormatException( message=message, call= call, package= package,
+   if (message == "*") { message= FileNotEmptyMsg( path=path ) }
+   ffEx <- FileFormatException( message=message, call= call, package= package,
 										 data=data, path=path, line=line, ... )
 	extendException( "FileNotEmptyException", ffEx )
 }

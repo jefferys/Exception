@@ -5,6 +5,7 @@
 #' class name with try-catch.
 #'
 #' @importFrom JefferysRUtils %p% %pp% expect_equalOrNull
+#' @importFrom utils packageName
 #'
 #' @name package-Exception
 NULL

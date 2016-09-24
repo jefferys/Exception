@@ -16,55 +16,43 @@
 \alias{PathException}
 \title{The IOException heierarchy.}
 \usage{
-IOException(message = "An IOException occurred.", call = NULL,
+IOException(message = "*", call = NULL, package = packageName(), ...)
+
+FileSystemException(message = "*", call = NULL, package = packageName(),
+  ...)
+
+PathException(path, message = "*", call = NULL, package = packageName(),
+  ...)
+
+FileException(path, message = "*", call = NULL, package = packageName(),
+  ...)
+
+DirectoryException(path, message = "*", call = NULL,
   package = packageName(), ...)
 
-FileSystemException(message = "A FileSystemException occurred.",
-  call = NULL, package = packageName(), ...)
+LinkException(path, target, message = "*", call = NULL,
+  package = packageName(), ...)
 
-PathException(path,
-  message = sprintf("A PathException occurred involving path: \\"\%s\\". (Running in: \\"\%s\\").",
-  path, getwd()), call = NULL, package = packageName(), ...)
+NoSuchLinkTargetException(path, target, message = "*", call = NULL,
+  package = packageName(), ...)
 
-FileException(path,
-  message = sprintf("A FileException occurred involving file: \\"\%s\\". (Running in: \\"\%s\\").",
-  path, getwd()), call = NULL, package = packageName(), ...)
+NoSuchFileException(path, message = "*", call = NULL,
+  package = packageName(), ...)
 
-DirectoryException(path,
-  message = sprintf("A DirectoryException occurred involving directory: \\"\%s\\". (Running in: \\"\%s\\").",
-  path, getwd()), call = NULL, package = packageName(), ...)
+NoSuchDirectoryException(path, message = "*", call = NULL,
+  package = packageName(), ...)
 
-LinkException(path, target,
-  message = sprintf("A LinkException occurred involving link: \\"\%s\\" with target: \\"\%s\\". (Running in: \\"\%s\\").",
-  path, target, getwd()), call = NULL, package = packageName(), ...)
+NoSuchLinkException(path, target = NA, message = "*", call = NULL,
+  package = packageName(), ...)
 
-NoSuchLinkTargetException(path, target,
-  message = sprintf("The link target does not exist; link: \\"\%s\\" with target: \\"\%s\\". (Running in: \\"\%s\\").",
-  path, target, getwd()), call = NULL, package = packageName(), ...)
+FileExistsException(path, message = "*", call = NULL,
+  package = packageName(), ...)
 
-NoSuchFileException(path,
-  message = sprintf("No such file: \\"\%s\\". (Running in: \\"\%s\\").", path,
-  getwd()), call = NULL, package = packageName(), ...)
+DirectoryExistsException(path, message = "*", call = NULL,
+  package = packageName(), ...)
 
-NoSuchDirectoryException(path,
-  message = sprintf("No such directory: \\"\%s\\". (Running in: \\"\%s\\").",
-  path, getwd()), call = NULL, package = packageName(), ...)
-
-NoSuchLinkException(path, target = NA,
-  message = sprintf("No such link: \\"\%s\\". (Running in: \\"\%s\\").", path,
-  getwd()), call = NULL, package = packageName(), ...)
-
-FileExistsException(path,
-  message = sprintf("File already exists: \\"\%s\\". (Running in: \\"\%s\\").",
-  path, getwd()), call = NULL, package = packageName(), ...)
-
-DirectoryExistsException(path,
-  message = sprintf("Directory already exists: \\"\%s\\". (Running in: \\"\%s\\").",
-  path, getwd()), call = NULL, package = packageName(), ...)
-
-LinkExistsException(path, target,
-  message = sprintf("Link already exists: \\"\%s\\" with target: \\"\%s\\". (Running in: \\"\%s\\").",
-  path, target, getwd()), call = NULL, package = packageName(), ...)
+LinkExistsException(path, target, message = "*", call = NULL,
+  package = packageName(), ...)
 }
 \arguments{
 \item{message}{The message associated with the exception, for reading by
@@ -76,8 +64,8 @@ over-ridden for \code{Exception} subclasses.}
 
 \item{call}{The call or call stack associated with the exception. By default
 this is NULL as \code{IOException}s are usually environment problems. Can
-be overriden to provide the \code{\link{Sys.calls}} call stack or a single
-\code{\link{Sys.call}}.}
+be overriden to provide the \code{\link{sys.calls}} call stack or a single
+\code{\link{sys.call}}.}
 
 \item{package}{The package where this exception is generated. May be
 \code{NULL} when exceptions are generated and signaled from interactive or
@@ -274,11 +262,11 @@ transparently to identify a file or directory, in which case a
 }}
 \examples{
 ioEx <- IOException()
-conditionMessage(e)
-conditionCall(e)
-exceptionPackage(e)
+conditionMessage(ioEx)
+conditionCall(ioEx)
+exceptionPackage(ioEx)
 
-ioEx <- IOException( "Including the call stack", call=Sys.calls() )
+ioEx <- IOException( "Including the call stack", call=sys.calls() )
 ioEx <- IOException( "Lying about the package", package="NotMine" )
 ioEx <- IOException( "Extra data included", x=1, y=list(A=1, B="two"), path="../" )
 x <- ioEx$x
@@ -286,7 +274,7 @@ y <- ioEx$y
 path <- exceptionPath(ioEx)
 path == ioEx$path
 
-pEx <- pathException( "/some/path" )
+pEx <- PathException( "/some/path" )
 thePath <- exceptionPath(pEx)
 
 \dontrun{

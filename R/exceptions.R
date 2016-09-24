@@ -94,6 +94,8 @@ condition <- function( message= 'condition', call= NULL ) {
 #'   this object was constructed. Set \code{NULL} when an exception does not
 #'   involve code, or with \code{\link{sys.call}} when only a specific code line
 #'   is involved.
+#' @param c An excepetion object. This parameter is called "c" to be compatible
+#'   with the underlying S3 object "condition" class.
 #' @param package
 #'   The package where this exception is generated; tries to guess this by
 #'   default. When not called from within a package, this will likely be
@@ -104,9 +106,6 @@ condition <- function( message= 'condition', call= NULL ) {
 #'   Additional arguments defining \code{\var{key}=\var{value}} data to include
 #'   in the object. These are accessible by treating the generated exception as
 #'   a list.
-#' @param e
-#'    An exception object to query for a message, will prepend '\code{[\var{package}]}'
-#'    if the exception was generated from some package's code.
 #'
 #' @return \code{Exception} returns an \code{Event} object, which is an object
 #'   of class \code{c("Exception", "condition")} describing some problematic
@@ -116,8 +115,8 @@ condition <- function( message= 'condition', call= NULL ) {
 #'   associated with that exception, with the \code{package} of the exception
 #'   prepended.
 #'
-#' @seealso \code{\link{condition}}, \code{\link{conditionMessage}},
-#'   \code{\link{conditionCall}}, \code{\link{exceptionPackage}, \code{\link{tryCatch}}}
+#' @seealso condition, conditionMessage, conditionCall, exceptionPackage,
+#'   tryCatch
 #'
 #' @examples
 #' e <- Exception()
@@ -130,10 +129,10 @@ condition <- function( message= 'condition', call= NULL ) {
 #' y <- e$y
 #' z <- e$z
 #'
-#' \dontrun{
+#'\dontrun{
 #'   stop(Exception( "Oops, that didn't work." ))
 #'
-#'   # Convert a fatal Exception into a waning.
+#'   # Convert a fatal Exception into a warning.
 #'   e <- Exception( "Lying about the package", package="NotMine" )
 #'   tryCatch( stop(e), Exception= function(e) {warning(e)})
 #' }
@@ -153,12 +152,12 @@ Exception <- function ( message= 'An Exception occurred.',
 
 #' @rdname Exception
 #' @export
-conditionMessage.Exception <- function(e) {
-   if (is.character(e$package) && nchar(e$package) > 0) {
-      return( paste0( '[', e$package, '] ', e$message ))
+conditionMessage.Exception <- function(c) {
+   if (is.character(c$package) && nchar(c$package) > 0) {
+      return( paste0( '[', c$package, '] ', c$message ))
    }
    else {
-      return( e$message )
+      return( c$message )
    }
 }
 
@@ -181,7 +180,7 @@ conditionMessage.Exception <- function(e) {
 #' package <- exceptionPackage(e)
 #'
 #' @export
-exceptionPackage <- function (...) {
+exceptionPackage <- function (e, ...) {
    UseMethod( "exceptionPackage" )
 }
 
@@ -234,13 +233,13 @@ exceptionPackage.Exception <- function (e, ...) { return (e$package) }
 #' fEx <- FruitException( fruit= "tomato" )
 #' inherits(fEx, "FruitException")
 #' inherits(fEx, "PedanticException")
-#' inherits(e, "Exception")
-#' inherits(e, "condition")
+#' inherits(fEx, "Exception")
+#' inherits(fEx, "condition")
 #' fEx$fruit == "tomato"   # Internal use only
 #'
 #' # Making fruit accessible by external users.
 #' exceptionFruit <- function(...)  UseMethod( "exceptionFruit" )
-#' exceptionFruit.Exception(e, ...) e$fruit
+#' exceptionFruit.Exception <-function (e, ...) e$fruit
 #'
 #' exceptionFruit( fEx )
 #'
@@ -249,23 +248,23 @@ exceptionPackage.Exception <- function (e, ...) { return (e$package) }
 #' exceptionFruit( ex ) == ex$fruit
 #' conditionMessage( ex ) == "[testing] An Exception occurred."
 #'
-#' # Can use data variables in messages
-#' ex <- Exception( message= paste0( "I hate ", fruit ),
-#'    fruit= "Green Pepper", package="testing")
-#' conditionMessage( ex ) == "[testing] I hate Green Pepper."
+#' # User putting in extra data for internal use
+#' withComplainerFEx <- FruitException( fruit= "tomato", complainer= "Bob")
+#' tryCatch(
+#'    { stop(withComplainerFEx) },
+#'    FruitException= function(e) {
+#'       if (e$complainer == "Bob") {
+#'          message( paste0( "Ignoring Bob's complaint: \"",
+#'                             conditionMessage(e), "\"" ))
+#'       }
+#'    }
+#'  )
 #'
 #' \dontrun{
-#'    # User putting in extra data for internal use
-#'    withComplainerFEx <- FruitException( fruit= "tomato", complainer= "Bob")
-#'    tryCatch(
-#'       { stop(withComplainerFEx) },
-#'       FruitException= function(e) {
-#'          if (e$complainer == "Bob") {
-#'             message(paste0( "Ignoring Bob's complaint: \"",
-#'                             conditionMessage(e), "\"" ))
-#'          }
-#'       }
-#'    )
+#' # Can't use data variables in messages without declaring real function.
+#' ex <- Exception( fruit= "Green Pepper",
+#'    message= paste0( "I hate ", fruit ), package="testing" )
+#' #> Error in paste0("I hate ", fruit) : object 'fruit' not found
 #' }
 #'
 #' @export

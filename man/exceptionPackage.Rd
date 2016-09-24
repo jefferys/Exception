@@ -5,14 +5,14 @@
 \alias{exceptionPackage.Exception}
 \title{Access the package data in an Exception}
 \usage{
-exceptionPackage(...)
+exceptionPackage(e, ...)
 
 \method{exceptionPackage}{Exception}(e, ...)
 }
 \arguments{
-\item{...}{Future-proof the S3 generic method; not used here.}
-
 \item{e}{The Exception object to query}
+
+\item{...}{Future-proof the S3 generic method; not used here.}
 }
 \value{
 The package where the \code{Exception} was generated.

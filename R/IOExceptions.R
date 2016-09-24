@@ -17,8 +17,8 @@
 #'   over-ridden for \code{Exception} subclasses.
 #' @param call The call or call stack associated with the exception. By default
 #'   this is NULL as \code{IOException}s are usually environment problems. Can
-#'   be overriden to provide the \code{\link{Sys.calls}} call stack or a single
-#'   \code{\link{Sys.call}}.
+#'   be overriden to provide the \code{\link{sys.calls}} call stack or a single
+#'   \code{\link{sys.call}}.
 #' @param package The package where this exception is generated. May be
 #'   \code{NULL} when exceptions are generated and signaled from interactive or
 #'   script level code and not from a package. Attempts to guess the package by
@@ -45,7 +45,6 @@
 #'    \item data: None
 #' }
 #'
-
 #' @return An \code{IOException} or descendant describing some problematic
 #'   event involving a file system, a network socket, etc. Always has or extends
 #'   class \code{c( "IOException", "Exception", "condition" )}.
@@ -55,11 +54,11 @@
 #'
 #' @examples
 #' ioEx <- IOException()
-#' conditionMessage(e)
-#' conditionCall(e)
-#' exceptionPackage(e)
+#' conditionMessage(ioEx)
+#' conditionCall(ioEx)
+#' exceptionPackage(ioEx)
 #'
-#' ioEx <- IOException( "Including the call stack", call=Sys.calls() )
+#' ioEx <- IOException( "Including the call stack", call=sys.calls() )
 #' ioEx <- IOException( "Lying about the package", package="NotMine" )
 #' ioEx <- IOException( "Extra data included", x=1, y=list(A=1, B="two"), path="../" )
 #' x <- ioEx$x
@@ -67,7 +66,7 @@
 #' path <- exceptionPath(ioEx)
 #' path == ioEx$path
 #'
-#' pEx <- pathException( "/some/path" )
+#' pEx <- PathException( "/some/path" )
 #' thePath <- exceptionPath(pEx)
 #'
 #' \dontrun{
@@ -78,9 +77,10 @@
 #'   }
 #' }
 #' @export
-IOException <- function( message= 'An IOException occurred.',
-                         call= NULL, package=packageName(), ...
+IOException <- function(
+   message= "*", call= NULL, package=packageName(), ...
 ) {
+   if (message == "*") { message <- 'An IOException occurred.' }
    e <- Exception( message= message, call= call, package= package, ... )
    extendException( "IOException", e )
 }
@@ -97,9 +97,10 @@ IOException <- function( message= 'An IOException occurred.',
 #' }
 #'
 #' @export
-FileSystemException <- function( message= 'A FileSystemException occurred.',
-                                 call= NULL, package= packageName(), ...
+FileSystemException <- function(
+   message= "*", call= NULL, package= packageName(), ...
 ) {
+   if (message == "*") { message <- 'A FileSystemException occurred.' }
    ioEx <- IOException( message=message, call= call, package= package, ... )
    extendException( "FileSystemException", base= ioEx)
 }
@@ -120,11 +121,12 @@ FileSystemException <- function( message= 'A FileSystemException occurred.',
 #'
 #' @export
 PathException <- function( path,
-   message= sprintf(
-      'A PathException occurred involving path: "%s". (Running in: "%s").',
-      path, getwd()
-   ), call= NULL, package= packageName(), ...
+   message= "*", call= NULL, package= packageName(), ...
 ) {
+   if (message == "*") { message <- (
+      'A PathException occurred involving path: "' %p% path
+      %p%'". (Running in: "' %p% getwd() %p% '").'
+   ) }
    fsEx <- FileSystemException( message=message, call= call, package= package, path=path, ... )
    extendException( "PathException", base= fsEx)
 }
@@ -149,11 +151,11 @@ PathException <- function( path,
 #'
 #' @export
 FileException <- function( path,
-   message= sprintf(
-      'A FileException occurred involving file: "%s". (Running in: "%s").',
-                              path, getwd()
-                           ), call= NULL, package= packageName(), ...
+   message= "*", call= NULL, package= packageName(), ...
 ) {
+   if (message == "*") { message <- sprintf(
+      'A FileException occurred involving file: "%s". (Running in: "%s").',
+      path, getwd() ) }
    fEx <- PathException( message=message, call= call, package= package, path=path, ... )
    extendException( "FileException", base= fEx )
 }
@@ -176,11 +178,11 @@ FileException <- function( path,
 #'
 #' @export
 DirectoryException <- function( path,
-   message= sprintf(
-      'A DirectoryException occurred involving directory: "%s". (Running in: "%s").',
-      path, getwd()
-   ), call= NULL, package= packageName(), ...
+   message= "*", call= NULL, package= packageName(), ...
 ) {
+   if (message == "*") { message <- sprintf(
+      'A DirectoryException occurred involving directory: "%s". (Running in: "%s").',
+      path, getwd() ) }
    dEx <- PathException( message=message, call= call, package= package, path=path, ... )
    extendException( "DirectoryException", base= dEx )
 }
@@ -208,11 +210,11 @@ DirectoryException <- function( path,
 #'
 #' @export
 LinkException <- function( path, target,
-   message= sprintf(
-      'A LinkException occurred involving link: "%s" with target: "%s". (Running in: "%s").',
-      path, target, getwd()
-   ), call= NULL, package= packageName(), ...
+   message= "*", call= NULL, package= packageName(), ...
 ) {
+   if (message == "*") { message <- sprintf(
+      'A LinkException occurred involving link: "%s" with target: "%s". (Running in: "%s").',
+      path, target, getwd() ) }
    linkEx <- PathException( message=message, call= call, package= package,
                          path=path, target=target, ... )
    extendException( "LinkException", base= linkEx )
@@ -233,11 +235,11 @@ LinkException <- function( path, target,
 #'
 #' @export
 NoSuchLinkTargetException <- function( path, target,
-   message= sprintf(
-      'The link target does not exist; link: "%s" with target: "%s". (Running in: "%s").',
-      path, target, getwd()
-   ), call= NULL, package= packageName(), ...
+   message= "*", call= NULL, package= packageName(), ...
 ) {
+   if (message == "*") { message <- sprintf(
+      'The link target does not exist; link: "%s" with target: "%s". (Running in: "%s").',
+      path, target, getwd()) }
    nsltEx <- LinkException( message=message, call= call, package= package,
                             path=path, target=target, ... )
    extendException( "NoSuchLinkTargetException", base= nsltEx )
@@ -257,11 +259,11 @@ NoSuchLinkTargetException <- function( path, target,
 #'
 #' @export
 NoSuchFileException <- function( path,
-   message= sprintf(
-      'No such file: "%s". (Running in: "%s").',
-      path, getwd()
-   ), call= NULL, package= packageName(), ...
+   message= "*", call= NULL, package= packageName(), ...
 ) {
+   if (message == "*") { message <- sprintf(
+      'No such file: "%s". (Running in: "%s").',
+      path, getwd() ) }
    nsfEx <- FileException( message=message, call= call, package= package, path=path, ... )
    extendException( "NoSuchFileException", base= nsfEx )
 }
@@ -280,11 +282,11 @@ NoSuchFileException <- function( path,
 #'
 #' @export
 NoSuchDirectoryException <- function( path,
-   message= sprintf(
-      'No such directory: "%s". (Running in: "%s").',
-      path, getwd()
-   ), call= NULL, package= packageName(), ...
+   message= "*", call= NULL, package= packageName(), ...
 ) {
+   if (message == "*") { message <- sprintf(
+      'No such directory: "%s". (Running in: "%s").',
+      path, getwd() ) }
    nsdEx <- DirectoryException( message=message, call= call, package= package, path=path, ... )
    extendException( "NoSuchDirectoryException", base= nsdEx )
 }
@@ -307,11 +309,11 @@ NoSuchDirectoryException <- function( path,
 #'
 #' @export
 NoSuchLinkException <- function( path, target=NA,
-   message= sprintf(
-      'No such link: "%s". (Running in: "%s").',
-      path, getwd()
-   ), call= NULL, package= packageName(), ...
+   message= "*", call= NULL, package= packageName(), ...
 ) {
+   if (message == "*") { message <- sprintf(
+      'No such link: "%s". (Running in: "%s").',
+      path, getwd() ) }
    nslEx <- LinkException( message=message, call= call, package= package,
                            path=path, target=target, ... )
    extendException( "NoSuchLinkException", base= nslEx )
@@ -331,11 +333,12 @@ NoSuchLinkException <- function( path, target=NA,
 #'
 #' @export
 FileExistsException <- function( path,
-   message= sprintf(
+   message= "*", call= NULL, package= packageName(), ...
+) {
+   if (message == "*") { message <- sprintf(
       'File already exists: "%s". (Running in: "%s").',
       path, getwd()
-   ), call= NULL, package= packageName(), ...
-) {
+   ) }
    feEx <- FileException( message=message, call= call, package= package, path=path, ... )
    extendException( "FileExistsException", base= feEx )
 }
@@ -354,11 +357,11 @@ FileExistsException <- function( path,
 #'
 #' @export
 DirectoryExistsException <- function( path,
-   message= sprintf(
-      'Directory already exists: "%s". (Running in: "%s").',
-      path, getwd()
-   ), call= NULL, package= packageName(), ...
+   message= "*", call= NULL, package= packageName(), ...
 ) {
+   if (message == "*") { message <- sprintf(
+      'Directory already exists: "%s". (Running in: "%s").',
+      path, getwd() ) }
    deEx <- DirectoryException( message=message, call= call, package= package, path=path, ... )
    extendException( "DirectoryExistsException", base= deEx )
 }
@@ -381,11 +384,11 @@ DirectoryExistsException <- function( path,
 #'
 #' @export
 LinkExistsException <- function( path, target,
-   message= sprintf(
-      'Link already exists: "%s" with target: "%s". (Running in: "%s").',
-      path, target, getwd()
-   ), call= NULL, package= packageName(), ...
+   message= "*", call= NULL, package= packageName(), ...
 ) {
+   if (message == "*") { message <- sprintf(
+      'Link already exists: "%s" with target: "%s". (Running in: "%s").',
+      path, target, getwd() ) }
    leEx <- LinkException( message=message, call= call, package= package,
                            path=path, target=target, ... )
    extendException( "LinkExistsException", base= leEx )

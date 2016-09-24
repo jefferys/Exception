@@ -54,13 +54,13 @@ FruitException <- function( fruit,
 fEx <- FruitException( fruit= "tomato" )
 inherits(fEx, "FruitException")
 inherits(fEx, "PedanticException")
-inherits(e, "Exception")
-inherits(e, "condition")
+inherits(fEx, "Exception")
+inherits(fEx, "condition")
 fEx$fruit == "tomato"   # Internal use only
 
 # Making fruit accessible by external users.
 exceptionFruit <- function(...)  UseMethod( "exceptionFruit" )
-exceptionFruit.Exception(e, ...) e$fruit
+exceptionFruit.Exception <-function (e, ...) e$fruit
 
 exceptionFruit( fEx )
 
@@ -69,23 +69,23 @@ ex <- Exception( fruit= "Green Pepper", package="testing" )
 exceptionFruit( ex ) == ex$fruit
 conditionMessage( ex ) == "[testing] An Exception occurred."
 
-# Can use data variables in messages
-ex <- Exception( message= paste0( "I hate ", fruit ),
-   fruit= "Green Pepper", package="testing")
-conditionMessage( ex ) == "[testing] I hate Green Pepper."
+# User putting in extra data for internal use
+withComplainerFEx <- FruitException( fruit= "tomato", complainer= "Bob")
+tryCatch(
+   { stop(withComplainerFEx) },
+   FruitException= function(e) {
+      if (e$complainer == "Bob") {
+         message( paste0( "Ignoring Bob's complaint: \\"",
+                            conditionMessage(e), "\\"" ))
+      }
+   }
+ )
 
 \dontrun{
-   # User putting in extra data for internal use
-   withComplainerFEx <- FruitException( fruit= "tomato", complainer= "Bob")
-   tryCatch(
-      { stop(withComplainerFEx) },
-      FruitException= function(e) {
-         if (e$complainer == "Bob") {
-            message(paste0( "Ignoring Bob's complaint: \\"",
-                            conditionMessage(e), "\\"" ))
-         }
-      }
-   )
+# Can't use data variables in messages without declaring real function.
+ex <- Exception( fruit= "Green Pepper",
+   message= paste0( "I hate ", fruit ), package="testing" )
+#> Error in paste0("I hate ", fruit) : object 'fruit' not found
 }
 
 }

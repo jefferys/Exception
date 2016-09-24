@@ -8,7 +8,7 @@
 Exception(message = "An Exception occurred.", call = sys.calls(),
   package = packageName(), ...)
 
-\method{conditionMessage}{Exception}(e)
+\method{conditionMessage}{Exception}(c)
 }
 \arguments{
 \item{message}{The message associated with the exception. By default this is \code{"An
@@ -34,8 +34,8 @@ automatically prepended to the message.}
 in the object. These are accessible by treating the generated exception as
 a list.}
 
-\item{e}{An exception object to query for a message, will prepend '\code{[\var{package}]}'
-if the exception was generated from some package's code.}
+\item{c}{An excepetion object. This parameter is called "c" to be compatible
+with the underlying S3 object "condition" class.}
 }
 \value{
 \code{Exception} returns an \code{Event} object, which is an object
@@ -97,14 +97,14 @@ z <- e$z
 \dontrun{
   stop(Exception( "Oops, that didn't work." ))
 
-  # Convert a fatal Exception into a waning.
+  # Convert a fatal Exception into a warning.
   e <- Exception( "Lying about the package", package="NotMine" )
   tryCatch( stop(e), Exception= function(e) {warning(e)})
 }
 
 }
 \seealso{
-\code{\link{condition}}, \code{\link{conditionMessage}},
-  \code{\link{conditionCall}}, \code{\link{exceptionPackage}, \code{\link{tryCatch}}}
+condition, conditionMessage, conditionCall, exceptionPackage,
+  tryCatch
 }
 

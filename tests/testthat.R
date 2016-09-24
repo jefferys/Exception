@@ -1,4 +1,4 @@
 library(testthat)
-library(exception)
+library(Exception)
 
-test_check("exception")
+test_check("Exception")

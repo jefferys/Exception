@@ -1,10 +1,10 @@
-Package: exception
+Package: Exception
 Type: Package
 Title: Classed exception object hierarchy
 Version: 0.0.0.9000
 Author: Stuart R. Jeffers
 Maintainer: Stuart R. Jeffers <srjefferys@gmail.com>
-Description: Provides classed exception objects with a pre-defined hierarchy
+Description: Provides classed Exception objects with a pre-defined hierarchy
  of classes. This allows catching exceptions in a nested way by using a
  class or parent class name with try-catch.
 License: MIT + file LICENSE

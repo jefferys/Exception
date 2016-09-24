@@ -11,7 +11,6 @@ knitr::opts_chunk$set(
   fig.path = "README-"
 )
 ```
-
 # exception
 
 Provides exception objects for use in an exception hierarchy, and a means of
@@ -25,9 +24,39 @@ library("exception")
 nsfEx <- NoSuchFileException( path= "waldo.txt" )
 class(nsfEx)
 
+# Anything in Hierarchy caught
 tryCatch(
    stopWith( nsfEx ),
-   IOException= function(e) {print("Caught an IOException.")}
+   NoSuchFileException= function(e) {print("Caught a NoSuchFileException")},
+   IOException= function(e) {print("Caught an IOException.")},
+   error= function(e) {print("Caught some exception")}
 )
+
+tryCatch(
+   stopWith( nsfEx ),
+   IOException= function(e) {print("Caught an IOException.")},
+   error= function(e) {print("Caught some exception")}
+)
+
+tryCatch(
+   stopWith( nsfEx ),
+   error= function(e) {print("Caught some exception")}
+)
+
+# Note that it is the first to match, not best match.
+tryCatch(
+   stopWith( nsfEx ),
+   error= function(e) {print("Caught some exception")},
+   NoSuchFileException= function(e) {print("Caught a NoSuchFileException")}
+)
+
+# Normal stop(), warning(), and message() signalling function do not wrapp
+# objects as error, warning, or message, although will still trigger halts,  print warnings, or print messages.
+tryCatch(
+   stop( nsfEx ),
+   error= function(e) {print("Caught some exception")},
+   NoSuchFileException= function(e) {print("Caught a NoSuchFileException")}
+)
+
 ```
 
